@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: sgau-postgres
+    environment:
+      POSTGRES_DB: sgau_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - sgau_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+  api:
+    build: .
+    container_name: sgau-api
+    depends_on:
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/sgau_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "9001:9001"
+volumes:
+  sgau_data:
